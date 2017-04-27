@@ -106,6 +106,6 @@ class Command(RunserverCommand):
             self._start_watchdog()
 
     def handle(self, *args, **options):
-        self._start_liveserver(**options)
+        self.start_liveserver(**options)
         super(Command, self).handle(*args, **options)
-        self._stop_liveserver()
+        self.stop_liveserver()

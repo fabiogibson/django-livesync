@@ -4,15 +4,16 @@ from django.conf import settings
 
 
 class DjangoLiveSyncMiddleware(object):
-    def __init__(self, get_response):
+    def __init__(self, get_response=None):
         self.get_response = get_response
 
     def __call__(self, request):
         response = self.get_response(request)
         return self.process_response(request, response)
 
-    def process_response(self, request, response):
-        if settings.DEBUG and response['Content-Type'] == 'text/html':
+    @staticmethod
+    def process_response(request, response):
+        if settings.DEBUG and 'text/html' in response['Content-Type']:
             script_settings = """
                 <script type='text/javascript'>
                     window.DJANGO_LIVESYNC = {settings}
