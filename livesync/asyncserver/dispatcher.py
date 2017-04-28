@@ -5,7 +5,7 @@ from django.conf import settings
 
 
 EVENTS = {
-    'refresh': {"action": "refresh", "target": "window", "payload": None}
+    'refresh': {"action": "refresh"}
 }
 
 
