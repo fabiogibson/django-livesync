@@ -51,7 +51,7 @@ Configuration
 Installing the application
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Begin by adding ``django-livesync`` to the ``INSTALLED_APPS`` setting of
+Begin by adding ``livesync`` to the ``INSTALLED_APPS`` setting of
 your project. You can also specify the following additional settings:
 
 ``LIVE_PORT``
