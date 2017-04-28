@@ -13,7 +13,7 @@ packaged downloads and installation instructions.
 Installing
 --------------------
 
-Automatic installation using PYPI
+Automatic installation using PyPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 type::
