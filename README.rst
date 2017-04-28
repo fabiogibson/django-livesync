@@ -35,12 +35,13 @@ project you're working on. The default setup will enable the following features.
 
 3. Live syncronizathion between all connected browsers.
    Your actions will be syncronized between all connected browsers. Currently supports:
-    Page scrolling.
-    General clicks.
-    Key presses.
-    Browser refreshes.
 
-**IMPORTANT**: Currently, it was tested against Google Chrome and Mozilla Firefox web browsers.
+   * Page scroll.
+   * Page reload.
+   * Element click.
+   * Form fields in general.
+
+**IMPORTANT**: Currently, it was only tested against Google Chrome and Mozilla Firefox web browsers.
 
 
 Configuration
@@ -55,18 +56,18 @@ your project. You can also specify the following additional settings:
 ``LIVE_PORT``
     This is the number of the port on which live server will run.
 
-**IMPORTANT NOTES**:
-
-    1. If you have 'django.contrib.staticfiles' application installed, you must register 'django-livesync' before it, otherwise live server will launch.
-
-    2. Django LiveSync will only execute if DEBUG is set to True.
-
 
 Setup Middleware
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Add ``livesync.core.middleware.DjangoLiveSyncMiddleware`` to the ``MIDDLEWARE_CLASSES`` setting of your project.
 
+
+**IMPORTANT NOTES**:
+
+    1. If you have 'django.contrib.staticfiles' application installed, you must register 'django-livesync' before it, otherwise live server will not launch.
+
+    2. Django LiveSync will only execute if DEBUG is set to True.
 
 Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
