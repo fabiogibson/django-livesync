@@ -3,7 +3,7 @@ Quick start guide
 
 Before installing, you'll need to have a copy of
 `Django <http://www.djangoproject.com>`_ already installed. For the
-current release, Django 1.10 or newer is required.
+current release, Django 1.8 or newer is required.
 
 For further information, consult the `Django download page
 <http://www.djangoproject.com/download/>`_, which offers convenient
@@ -35,6 +35,7 @@ project you're working on. The default setup will enable the following features.
 
 3. Live syncronizathion between all connected browsers.
    Your actions will be syncronized between all connected browsers. Currently supports:
+   
 
    * Page scroll.
    * Page reload.
