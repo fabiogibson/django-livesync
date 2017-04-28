@@ -27,15 +27,11 @@ Basic configuration and use
 Once installed, you can add Django LiveSync to any Django-based
 project you're working on. The default setup will enable the following features.
 
-1. Automatic browser reload whenever development server restarts.
-   Every time django development server is reloaded, all connected browsers will automatically refresh.
+1. Every time django development server is reloaded, all connected browsers will automatically refresh.
 
-2. Automatic browser reload whenever a static file is updated.
-   Every time a static file or template is updated, all connected browsers will automatically refresh.
+2. Every time a static file or template is updated, all connected browsers will automatically refresh.
 
-3. Live syncronizathion between all connected browsers.
-   Your actions will be syncronized between all connected browsers. Currently supports:
-   
+3. Your actions will be synchronized between all connected browsers and devices. Currently supports:
 
    * Page scroll.
    * Page reload.
