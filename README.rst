@@ -13,7 +13,7 @@ packaged downloads and installation instructions.
 Installing
 --------------------
 
-Automatic installation using PYPI.
+Automatic installation using PYPI
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 type::
@@ -39,31 +39,56 @@ project you're working on. The default setup will enable the following features.
     General clicks.
     Key presses.
     Browser refreshes.
-    
+
 **IMPORTANT**: Currently, it was tested against Google Chrome and Mozilla Firefox web browsers.
 
 
 Configuration
 --------------------
 
+Installing the application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Begin by adding ``django-livesync`` to the ``INSTALLED_APPS`` setting of
 your project. You can also specify the following additional settings:
 
 ``LIVE_PORT``
-    This is the number of the port on which live asyncserver will run.
+    This is the number of the port on which live server will run.
 
-For example, you might have something like the following in your Django settings file::
+**IMPORTANT NOTES**:
+
+    1. If you have 'django.contrib.staticfiles' application installed, you must register 'django-livesync' before it, otherwise live server will launch.
+
+    2. Django LiveSync will only execute if DEBUG is set to True.
+
+
+Setup Middleware
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add ``livesync.core.middleware.DjangoLiveSyncMiddleware`` to the ``MIDDLEWARE_CLASSES`` setting of your project.
+
+
+Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You might have something like the following in your Django settings file::
+
+    DEBUG = True
 
     INSTALLED_APPS = (
         '...',
-        'django-livesync'
+        'livesync',
+        'django.contrib.staticfiles',
+        '...',
     )
 
     DJANGO_LIVESYNC = {
-    	'PORT': 9999 # default is set to 9001
+    	'PORT': 9999 # this is optional and is default set to 9001.
     }
 
+    MIDDLEWARE_CLASSES = (
+        'livesync.core.middleware.DjangoLiveSyncMiddleware',
+    )
 
-**IMPORTANT**: If you have 'django.contrib.staticfiles' application installed, you must register 'django-livesync' before it, otherwise livesync server will not be executed.
 
-Once you've done this, run ``python manage.py runserver``.
+Once you've done this, run ``python manage.py runserver`` as usual.
