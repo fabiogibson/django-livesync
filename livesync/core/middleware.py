@@ -18,9 +18,9 @@ class DjangoLiveSyncMiddleware(object):
                 <script type='text/javascript'>
                     window.DJANGO_LIVESYNC = {settings}
                 </script>
-            """.format(settings=json.dumps(settings.DJANGO_LIVESYNC))
+            """.format(settings=json.dumps(settings.DJANGO_LIVESYNC)).encode('UTF-8')
 
-            script_tag = """
+            script_tag = b"""
                 <script src='/static/livesync.js'></script></body>
             """
 

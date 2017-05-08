@@ -1,5 +1,5 @@
 from watchdog.events import PatternMatchingEventHandler
-from utils import get_md5
+from .utils import get_md5
 
 
 class BaseEventHandler(PatternMatchingEventHandler):
