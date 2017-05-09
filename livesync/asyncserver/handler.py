@@ -77,10 +77,6 @@ class WebSocketHandler(StreamRequestHandler):
         self.send_text(message, OPCODE_PONG)
 
     def send_text(self, message, opcode=OPCODE_TEXT):
-        """
-        Important: Fragmented(=continuation) messages are not supported since
-        their usage cases are limited - when we don't know the payload length.
-        """
         payload = create_payload(message)
 
         if not payload:

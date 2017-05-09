@@ -16,8 +16,6 @@ class WebsocketServer(ThreadingMixIn, TCPServer):
         host(str): Hostname or IP to listen for connections. By default 127.0.0.1
             is being used. To accept connections from any client, you should use
             0.0.0.0.
-        loglevel: Logging level from logging module to use for logging. By default
-            warnings and errors are being logged.
 
     Properties:
         clients(list): A list of connected clients. A client is a dictionary
