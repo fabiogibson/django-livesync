@@ -1,7 +1,7 @@
 from unittest import TestCase
+# from django.test import TestCase
 from mock import Mock, PropertyMock, patch
 from livesync.core.middleware import DjangoLiveSyncMiddleware
-# from django.conf import settings
 
 
 class LiveSyncMiddlewareTestCase(TestCase):
@@ -9,7 +9,7 @@ class LiveSyncMiddlewareTestCase(TestCase):
         self.mocked_response = Mock()
         self.get_response = Mock(return_value=self.mocked_response)
         self.middleware = DjangoLiveSyncMiddleware(self.get_response)
-        self.mock_content_property = PropertyMock(return_value="<body></body>")
+        self.mock_content_property = PropertyMock(return_value=b"<body></body>")
         type(self.mocked_response).content = self.mock_content_property
 
     @patch('livesync.core.middleware.settings.DEBUG', True)
@@ -20,7 +20,7 @@ class LiveSyncMiddlewareTestCase(TestCase):
         # assert
 
         self.mock_content_property.assert_called()
-        self.assertTrue("<script src='/static/livesync.js'></script>" in self.mock_content_property.call_args[0][0])
+        self.assertTrue(b"<script src='/static/livesync.js'></script>" in self.mock_content_property.call_args[0][0])
 
     @patch('livesync.core.middleware.settings.DEBUG', True)
     @patch('django.conf.settings.DEBUG', True)
