@@ -1,3 +1,12 @@
+What's this project?
+=================
+
+It's a simple Django application which will automatically reload
+your browser everytime Django Development Server is restarted and
+a static file or django template changes. Besides this,
+if you connect multiple browsers and devices on your development server,
+these will be all synchronized.
+
 Quick start guide
 =================
 
