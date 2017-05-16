@@ -1,41 +1,35 @@
 import sys
-from livesync.asyncserver.handler import WebSocketHandler
+from tornado.web import Application
+from tornado.ioloop import IOLoop
+from .handler import LiveSyncSocketHandler
+from .dispatcher import dispatch
+from socket import error
+import time
 
-if sys.version_info[0] < 3:
-    from SocketServer import ThreadingMixIn, TCPServer
-else:
-    from socketserver import ThreadingMixIn, TCPServer
 
+class LiveSyncSocketServer(Application):
+    def __init__(self,port=9001):
+        self.port = port
+        super(LiveSyncSocketServer, self).__init__([(r"/", LiveSyncSocketHandler)])
 
-class WebsocketServer(ThreadingMixIn, TCPServer):
-    """
-	A websocket server waiting for clients to connect.
+    def server_close(self):
+        IOLoop.instance().stop()
+        IOLoop.clear_instance()
 
-    Args:
-        port(int): Port to bind to
-        host(str): Hostname or IP to listen for connections. By default 127.0.0.1
-            is being used. To accept connections from any client, you should use
-            0.0.0.0.
-
-    Properties:
-        clients(list): A list of connected clients. A client is a dictionary
-            like below.
-                {
-                 'id'      : id,
-                 'handler' : handler,
-                 'address' : (addr, port)
-                }
-    """
-    allow_reuse_address = True
-    daemon_threads = True  # comment to keep threads alive until finished
-
-    def __init__(self, port=9001, host='127.0.0.1'):
-        TCPServer.__init__(self, (host, port), WebSocketHandler)
-
-    def run_forever(self):
+    def start(self, started_event=None):
         try:
-            self.serve_forever()
+            self.listen(self.port)
+            if started_event:
+                # inform the main thread the server could be started.
+                started_event.set()
+            IOLoop.instance().start()
         except KeyboardInterrupt:
             self.server_close()
-        except:
-            exit(1)
+            sys.exit(0)
+        except error as err:
+            if err.errno == 98:
+                time.sleep(1)
+                dispatch('refresh')
+                sys.exit(0)
+            else:
+                sys.exit(1)

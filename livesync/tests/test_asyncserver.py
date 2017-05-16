@@ -1,78 +1,94 @@
-import unittest
-import json
-import time
-from mock import Mock, patch
-from livesync.asyncserver import WebsocketServer
-from multiprocessing import Process
-from websocket import create_connection
+import uuid
+import tornado.testing
+import tornado.ioloop
+from livesync.asyncserver.server import LiveSyncSocketHandler, LiveSyncSocketServer
 from livesync.asyncserver.handler import Hub
-from livesync.asyncserver import dispatcher
-from django.conf import settings
+from livesync.asyncserver.dispatcher import dispatch
 
 
-class AsyncServerTestCase(unittest.TestCase):
+class AsyncServerTestCase(tornado.testing.AsyncTestCase):
+    def connect(self, session_id=None, client_id=None):
+        base_url = 'ws://localhost:{}/?'.format(self.port)
+        if session_id:
+            base_url += '&session_id={}'.format(session_id)
+        if client_id:
+            base_url += '&client_id={}'.format(client_id)
+        return tornado.websocket.websocket_connect(base_url)
 
     def setUp(self):
-        self.server = WebsocketServer()
-        self.process = Process(target=self.server.run_forever)
-        self.process.start()
-        self.connections = set()
+        super(AsyncServerTestCase, self).setUp()
+        self.app = LiveSyncSocketServer()
+        server = tornado.httpserver.HTTPServer(self.app)
+        socket, self.port = tornado.testing.bind_unused_port()
+        server.add_socket(socket)
 
     def tearDown(self):
-        self.server.server_close()
-        self.process.terminate()
-        self.process.join(timeout=0.5)
+        tornado.ioloop.IOLoop.instance().stop()
 
-        for connection in self.connections:
-            connection.close()
-
-    def connect(self):
-        connection = create_connection("ws://127.0.0.1:9001")
-        self.connections.add(connection)
-        return connection
-
-    def test_dispatcher(self):
-        client = self.connect()
+    @tornado.testing.gen_test
+    def test_client_receives_welcome_message(self):
         # act
-        dispatcher.dispatch('refresh')
+        client = yield self.connect()
+        response = yield client.read_message()
         # assert
-        self.assertEqual(json.dumps(dispatcher.EVENTS['refresh']), client.recv())
+        self.assertIn('welcome', response)
 
-    @patch('livesync.asyncserver.dispatcher.dispatch')
-    def test_dispatcher_async(self, mock_dispatch):
+    @tornado.testing.gen_test
+    def test_client_receives_rejoin_message(self):
         # act
-        dispatcher.dispatch_async('refresh')
-        # ugly wait for the message to be echoed :(
-        time.sleep(1)
+        client = yield self.connect(LiveSyncSocketHandler.session_id, str(uuid.uuid4()))
+        response = yield client.read_message()
         # assert
-        mock_dispatch.assert_called_with('refresh')
+        self.assertIn('rejoin', response)
 
-class HubTestCase(unittest.TestCase):
-    def tearDown(self):
-        Hub.clients.clear()
-
-    def test_register_client(self):
+    @tornado.testing.gen_test
+    def test_client_gets_registered_in_hub(self):
         # act
-        Hub.register(1)
-        # asert
-        self.assertIn(1, Hub.clients)
-        self.assertEquals(1, len(Hub.clients))
-
-    def test_remove_client(self):
-        # mock
-        Hub.clients = set([1])
-        # act
-        Hub.remove(1)
+        client_id = uuid.uuid4()
+        client = yield self.connect(client_id=client_id)
         # assert
-        self.assertNotIn(1, Hub.clients)
+        self.assertIn(str(client_id), Hub.clients())
 
-    def test_echo_to_registered_clients(self):
-        # mock
-        client_a = Mock()
-        client_b = Mock()
-        Hub.clients = set([client_a, client_b])
+    @tornado.testing.gen_test
+    def test_client_gets_removed_from_hub(self):
         # act
-        Hub.echo(client_a, 'message to be echoed')
+        client_id = uuid.uuid4()
+        client = yield self.connect(client_id=client_id)
+        client.close()
+        yield tornado.gen.sleep(0.1)
         # assert
-        client_b.send_text.assert_called()
-        client_a.send_text.assert_not_called()
+        self.assertNotIn(str(client_id), Hub.clients())
+
+    @tornado.testing.gen_test
+    def test_handler_asks_hub_to_echo_messages(self):
+        # act
+        client_a = yield self.connect()
+        client_b = yield self.connect()
+
+        # discarding handshake
+        yield client_b.read_message()
+
+        client_a.write_message('{ "action": "test" }')
+        message = yield client_b.read_message()
+
+        # assert
+        self.assertEqual('{ "action": "test" }', message)
+
+    @tornado.testing.gen_test
+    def test_redirect_action_updates_current_url(self):
+        # act
+        new_url = "http://url/"
+        client = yield self.connect()
+        client.write_message('{ "action": "redirect", "url": "%s"}' % new_url)
+
+        yield tornado.gen.sleep(0.1)
+        # assert
+        self.assertEqual(LiveSyncSocketHandler.current_url, new_url)
+
+    @tornado.testing.gen_test
+    def test_server_close(self):
+        self.app.start()
+        # act
+        self.app.server_close()
+        # assert
+        self.assertFalse(tornado.ioloop.IOLoop.initialized())

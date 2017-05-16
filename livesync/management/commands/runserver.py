@@ -1,11 +1,11 @@
 """Runserver command with livereload"""
 import re
 from socket import error as SocketError
-from multiprocessing import Process
+from multiprocessing import Process, Event
 from django.conf import settings
 from django.core.management.base import CommandError
 from django.core.management.commands.runserver import naiveip_re
-from livesync.asyncserver import WebsocketServer, dispatcher
+from livesync.asyncserver import LiveSyncSocketServer, dispatcher
 from livesync.fswatcher import FileWatcher
 from livesync.core.handler import LiveReloadRequestHandler
 
@@ -35,7 +35,7 @@ class Command(RunserverCommand):
             settings.DJANGO_LIVESYNC = dict()
 
         settings.DJANGO_LIVESYNC.setdefault('PORT', 9001)
-        settings.DJANGO_LIVESYNC.setdefault('HOST', '127.0.0.1')
+        settings.DJANGO_LIVESYNC.setdefault('HOST', 'localhost')
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
@@ -59,15 +59,13 @@ class Command(RunserverCommand):
         settings.DJANGO_LIVESYNC['HOST'] = value
 
     def _start_async_server(self):
-        try:
-            self.server = WebsocketServer(host=self.livehost, port=self.liveport)
-            self.server_process = Process(target=self.server.run_forever)
-            self.server_process.daemon = True
-            self.server_process.start()
-            return True
-        except SocketError:
-            dispatcher.dispatch_async('refresh')
-            return False
+        self.server = LiveSyncSocketServer(port=self.liveport)
+        server_started_event = Event()
+        self.server_process = Process(target=self.server.start, args=(server_started_event,))
+        self.server_process.daemon = True
+        self.server_process.start()
+        server_started_event.wait(timeout=0.1)
+        return server_started_event.is_set()
 
     def _stop_async_server(self):
         if self.server_process:

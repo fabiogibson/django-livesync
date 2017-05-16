@@ -3,4 +3,4 @@ clean:
 
 test:
 	@coverage run runtests.py
-	@coverage html
+	@coverage html --include "./livesync/*"

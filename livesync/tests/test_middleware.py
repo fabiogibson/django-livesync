@@ -1,5 +1,4 @@
 from unittest import TestCase
-# from django.test import TestCase
 from mock import Mock, PropertyMock, patch
 from livesync.core.middleware import DjangoLiveSyncMiddleware
 

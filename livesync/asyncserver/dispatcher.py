@@ -10,14 +10,10 @@ EVENTS = {
 
 
 def dispatch(event):
-    uri = "ws://{host}:{port}".format(
+    uri = "ws://localhost:{port}".format(
         host=settings.DJANGO_LIVESYNC['HOST'],
         port=settings.DJANGO_LIVESYNC['PORT'])
 
     connection = create_connection(uri)
     connection.send(json.dumps(EVENTS[event]))
     connection.close()
-
-
-def dispatch_async(event):
-    Timer(1, dispatch, args=(event,)).start()
