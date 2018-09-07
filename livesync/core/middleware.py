@@ -16,9 +16,9 @@ class DjangoLiveSyncMiddleware(object):
         if settings.DEBUG and 'text/html' in response['Content-Type']:
             script_settings = """
                 <script type='text/javascript'>
-                    window.DJANGO_LIVESYNC = {settings}
+                    window.DJANGO_LIVESYNC = {{'HOST': '{host}', 'PORT': {port} }}
                 </script>
-            """.format(settings=json.dumps(settings.DJANGO_LIVESYNC)).encode('UTF-8')
+            """.format(host=settings.DJANGO_LIVESYNC['HOST'], port=settings.DJANGO_LIVESYNC['PORT']).encode('UTF-8')
 
             script_tag = b"""
                 <script src='/static/livesync.js'></script></body>

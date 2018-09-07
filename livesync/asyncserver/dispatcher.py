@@ -10,7 +10,7 @@ EVENTS = {
 
 
 def dispatch(event):
-    uri = "ws://localhost:{port}".format(
+    uri = "ws://{host}:{port}".format(
         host=settings.DJANGO_LIVESYNC['HOST'],
         port=settings.DJANGO_LIVESYNC['PORT'])
 

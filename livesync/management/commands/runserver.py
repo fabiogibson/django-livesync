@@ -3,6 +3,7 @@ import re
 from socket import error as SocketError
 from multiprocessing import Process, Event
 from django.conf import settings
+from django.apps import apps
 from django.core.management.base import CommandError
 from django.core.management.commands.runserver import naiveip_re
 from livesync.asyncserver import LiveSyncSocketServer, dispatcher
@@ -36,6 +37,8 @@ class Command(RunserverCommand):
 
         settings.DJANGO_LIVESYNC.setdefault('PORT', 9001)
         settings.DJANGO_LIVESYNC.setdefault('HOST', 'localhost')
+        settings.DJANGO_LIVESYNC.setdefault('EXCLUDED_APPS', {'admin', 'debug_toolbar', 'livesync', })
+        settings.DJANGO_LIVESYNC.setdefault('INCLUDED_APPS', set(apps.app_configs.keys()) - settings.DJANGO_LIVESYNC['EXCLUDED_APPS'])
 
     def add_arguments(self, parser):
         super(Command, self).add_arguments(parser)
@@ -73,7 +76,7 @@ class Command(RunserverCommand):
             self.server_process.join()
 
     def _start_watchdog(self):
-        self.file_watcher = FileWatcher(settings.BASE_DIR)
+        self.file_watcher = FileWatcher()
         self.file_watcher.add_handler(LiveReloadRequestHandler())
         self.file_watcher.start()
 

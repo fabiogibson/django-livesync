@@ -1,5 +1,7 @@
 from unittest import TestCase
 from mock import patch, Mock, MagicMock
+from django.conf import settings
+
 from livesync.fswatcher import BaseEventHandler
 from livesync.core.handler import LiveReloadRequestHandler
 
@@ -82,6 +84,22 @@ class LiveReloadEventHandlerTestCase(TestCase):
 
     @patch('livesync.asyncserver.dispatcher.dispatch')
     def test_handle_dispatches_refresh(self, mock_dispatch):
+        # act
         self.handler.handle(Mock())
-
+        # assert
         mock_dispatch.assert_called_with('refresh')
+
+    @patch('livesync.core.middleware.settings.STATICFILES_DIRS',['foo', ])
+    def test_handler_watches_staticfiles_dirs(self):
+        self.assertIn('foo', self.handler.watched_paths)
+
+
+    @patch('livesync.core.middleware.settings.TEMPLATES',[{'DIRS': ['foo', ]}])
+    def test_handler_watches_template_dirs(self):
+        self.assertIn('foo', self.handler.watched_paths)
+
+    @patch('livesync.core.middleware.settings.STATICFILES_DIRS',['foo', ])
+    @patch('livesync.core.middleware.settings.TEMPLATES',[{'DIRS': ['bar', ]}])
+    def test_handler_combines_template_dirs_and_static_files(self):
+        self.assertIn('foo', self.handler.watched_paths)
+        self.assertIn('bar', self.handler.watched_paths)

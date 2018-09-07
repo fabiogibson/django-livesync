@@ -3,15 +3,15 @@ from .utils import get_md5
 
 
 class BaseEventHandler(PatternMatchingEventHandler):
-    @property
-    def extensions(self):
-        pass
-
     def handle(self, event): # pragma: no cover
         pass
 
+    @property
+    def watched_paths(self):
+        return []
+
     def __init__(self):
-        super(BaseEventHandler, self).__init__(ignore_directories=True, patterns=self.extensions)
+        super(BaseEventHandler, self).__init__(ignore_directories=True)
         self.history = dict()
 
     def _remove_from_history(self, path):

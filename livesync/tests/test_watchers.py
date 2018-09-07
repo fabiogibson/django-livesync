@@ -5,7 +5,7 @@ from livesync.fswatcher import FileWatcher, utils
 
 class FileWatcherTestCase(TestCase):
     def setUp(self):
-        self.watcher = FileWatcher('.')
+        self.watcher = FileWatcher()
 
     def test_add_new_handler(self):
         # act
@@ -16,12 +16,15 @@ class FileWatcherTestCase(TestCase):
     @patch('livesync.fswatcher.watcher.Observer.start')
     @patch('livesync.fswatcher.watcher.Observer.schedule')
     def test_start_watching(self, mock_schedule, mock_start):
-        self.watcher.handlers = set([1])
+        # mock
+        mock_handler = MagicMock()
+        mock_handler.watched_paths=['.']
+        self.watcher.handlers = set([mock_handler])
         #act
         self.watcher.start()
         # assert
         mock_start.assert_called()
-        mock_schedule.assert_called_with(1, '.', recursive=True)
+        mock_schedule.assert_called_with(mock_handler, '.', recursive=True)
 
     @patch('livesync.fswatcher.watcher.Observer.stop')
     def test_stop_watching(self, mock_stop):
