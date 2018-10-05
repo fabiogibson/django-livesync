@@ -57,11 +57,18 @@ Installing the application
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Begin by adding ``livesync`` to the ``INSTALLED_APPS`` setting of
-your project. You can also specify the following additional settings:
+your project. By default, the daemon will start watching all your installed apps
+template dirs.
+You can also specify the following additional settings:
 
 ``LIVE_PORT``
     This is the number of the port on which live server will run.
 
+``INCLUDED_APPS``
+    This tells django livesync to only watch for changes in apps in this set.
+
+``EXCLUDED_APPS``
+    This tells django livesync to ignore changes on apps in this set.
 
 Setup Middleware
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
