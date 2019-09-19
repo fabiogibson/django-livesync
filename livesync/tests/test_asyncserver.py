@@ -85,10 +85,3 @@ class AsyncServerTestCase(tornado.testing.AsyncTestCase):
         # assert
         self.assertEqual(LiveSyncSocketHandler.current_url, new_url)
 
-    @tornado.testing.gen_test
-    def test_server_close(self):
-        self.app.start()
-        # act
-        self.app.server_close()
-        # assert
-        self.assertFalse(tornado.ioloop.IOLoop.initialized())

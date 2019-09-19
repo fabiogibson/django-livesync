@@ -17,7 +17,7 @@ setup(
     url='',
     author='Fabio Gibson',
     author_email='fabiogibson.rj@gmail.com',
-    install_requires=['watchdog>=0.8.3', 'tornado==4.5.1', 'websocket-client>=0.40.0',],
+    install_requires=['watchdog>=0.8.3', 'tornado>=4.5.1', 'websocket-client>=0.40.0',],
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -26,7 +26,7 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],

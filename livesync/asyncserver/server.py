@@ -13,16 +13,20 @@ class LiveSyncSocketServer(Application):
         super(LiveSyncSocketServer, self).__init__([(r"/", LiveSyncSocketHandler)])
 
     def server_close(self):
-        IOLoop.instance().stop()
+        ioloop = IOLoop.instance()
+        ioloop.add_callback(ioloop.stop)
+        ioloop.clear_current()
         IOLoop.clear_instance()
 
     def start(self, started_event=None):
         try:
             self.listen(self.port)
             if started_event:
-                # inform the main thread the server could be started.
+                # inform the main thread the server can be started.
                 started_event.set()
-            IOLoop.instance().start()
+            instance = IOLoop.instance()
+            if not instance.asyncio_loop.is_running():
+                instance.start()
         except KeyboardInterrupt:
             self.server_close()
             sys.exit(0)

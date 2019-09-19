@@ -1,0 +1,20 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+coverage = "==4.3.4"
+mock = "==2.0.0"
+nose2 = "==0.6.5"
+tox = "==2.7.0"
+Django = "==1.11"
+ipdb = "*"
+
+[packages]
+watchdog = "==0.8.3"
+websocket_client = "==0.40.0"
+tornado = "*"
+
+[requires]
+python_version = "3.7"
