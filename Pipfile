@@ -8,7 +8,7 @@ coverage = "==4.3.4"
 mock = "==2.0.0"
 nose2 = "==0.6.5"
 tox = "==2.7.0"
-Django = "==1.11"
+Django = "==1.11.29"
 ipdb = "*"
 
 [packages]
