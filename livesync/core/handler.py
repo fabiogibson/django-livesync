@@ -17,13 +17,12 @@ class LiveReloadRequestHandler(BaseEventHandler):
 
         Returns:
         all static and template locations for all apps included in DJANGO_LIVESYNC.INCLUDED_APPS.
-        """
-        tmpls = [
-            os.path.join(d, 'templates') for d in get_app_template_dirs('')
-            if d.startswith(settings.BASE_DIR)
-            and os.path.basename(d) in settings.DJANGO_LIVESYNC['INCLUDED_APPS']
-            and os.path.exists(os.path.join(d, 'templates'))
-        ]
+        """        
+        tmpls = []            
+        for d in get_app_template_dirs(''):
+            d_str = str(d)
+            if d_str.startswith(str(settings.BASE_DIR)) and os.path.basename(d) in settings.DJANGO_LIVESYNC['INCLUDED_APPS'] and os.path.exists(os.path.join(d, 'templates')):
+                tmpls.append(os.path.join(d, 'templates'))
 
         paths = set(itertools.chain(
             getattr(settings, 'STATICFILES_DIRS', []),
